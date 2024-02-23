@@ -1,6 +1,4 @@
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
 import jwtValidate from '../middleware/jwt-validate.middleware.js'
 import resumeController from '../src/controller/resume.controller.js'
 const router = express.Router()

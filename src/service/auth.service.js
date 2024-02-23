@@ -1,7 +1,28 @@
 import jwtwebToken from 'jsonwebtoken'
 import userRepository from '../repository/user.repository.js'
 
-class authService {
+class AuthService {
+    verifyAccessToken = async (accessToken) => {
+        const token = jwtwebToken.verify(accessToken, 'resume@#')
+
+        // accessToken 안에 userId 데이터가 잘 들어있는가?
+        if (!token.userId) {
+            throw new Error('인증 정보가 올바르지 않습니다.')
+        }
+        const user = await userRepository.findOneUserByUserId(token.userId)
+        // const user = await prisma.user.findFirst({
+        //     where: {
+        //         userId: token.userId,
+        //     },
+        // })
+
+        if (!user) {
+            throw new Error('인증 정보가 올바르지 않습니다.')
+        }
+
+        return user
+    }
+
     verifyFreshToken = async (refreshToken) => {
         const token = jwtwebToken.verify(refreshToken, 'resume&%*')
         if (!token.userId) {
@@ -42,5 +63,5 @@ class authService {
         }
     }
 }
-
+const authService = new AuthService()
 export default authService

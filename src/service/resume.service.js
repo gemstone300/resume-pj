@@ -1,6 +1,6 @@
 import resumeRepository from '../repository/resume.repository.js'
 
-class resumeService {
+class ResumeService {
     findAllSortedResumes = async (sort) => {
         const resumes = await resumeRepository.selectAllSortedResumes(sort)
         return resumes
@@ -14,7 +14,7 @@ class resumeService {
     }
 
     createResume = async ({ title, content, userId }) => {
-        await resumeRepository.create({
+        await resumeRepository.createResume({
             title,
             content,
             status: 'APPLY',
@@ -51,6 +51,28 @@ class resumeService {
 
         //await resumeRepository.updateResumeByResumeId(resumeId,data)
     }
-}
 
+    deleteResumeByResumeId = async (resumeId, byUser) => {
+        const resume = await resumeRepository.selectOneResumeByResumeId(
+            resumeId
+        )
+
+        if (!resume) {
+            throw {
+                code: 400,
+                message: '존재하지 않는 이력서 입니다.',
+            }
+        }
+
+        if (resume.userId !== byUser.userId) {
+            throw {
+                code: 400,
+                message: '올바르지 않은 요청입니다.',
+            }
+        }
+
+        await resumeRepository.deleteResumeByResumeId(resumeId)
+    }
+}
+const resumeService = new ResumeService()
 export default resumeService
